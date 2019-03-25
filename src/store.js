@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import axios from 'axios'
 
 Vue.use(Vuex);
 
@@ -10,10 +11,13 @@ export default new Vuex.Store({
       phonenumber: String,
       password: String
     },
-    messages: []
+    messages: [],
+    message: String,
+    to: String
   },
   mutations: {
-    setPhonenumber: (state, phonenumber) => state.phonenumber = phonenumber,
+    setMessage: (state, message) => state.message = message,
+    setPhonenumber: (state, phonenumber) => state.user.phonenumber = phonenumber,
     setPassword: (state, password) => state.password = password,
     logIn: state => state.isLoggedIn = true,
     logOut: state => state.isLoggedIn = false,
@@ -21,14 +25,28 @@ export default new Vuex.Store({
     clearMessages: state => state.messages = []
   },
   actions: {
+    setMessage: (context, message) => context.commit('setMessage', message),
     setPhonenumber: (context, phonenumber) => context.commit('setPhonenumber', phonenumber),
-    setPhonenumber: (context, password) => context.commit('setPassword', password),
+    setPassword: (context, password) => context.commit('setPassword', password),
     LogIn: context => context.commit('logIn'),
     logOut: context => context.commit('logOut'),
     addMessage: (context, message) => context.commit('addMessage', message),
-    clearMessages: context => context.commit('clearMessages')
+    clearMessages: context => context.commit('clearMessages'),
+    fetchUsers: contex => {
+      axios.get('http://localhost:8080/user').then(response => console.log('RESPONSE DATA:\n', response.data))
+    },
+    fetchUser: contex => {
+      axios.get('http://localhost:8080/user/').then(response => console.log('RESPONSE DATA:\n', response.data))
+    },
+    sendMessage: context => axios.post('/message', {
+      "from": context.state.user.phonenumber,
+      "to": context.state.to || '',
+      "message": context.state.message
+    }).then(response => console.log('response.data: ', response.data)).catch(error => console.log('error: ', error))
   },
   getters: {
-    messages: state => state.messages
+    messages: state => state.messages,
+    message: state => state.message,
+    to: state => state.to
   }
 });

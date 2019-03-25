@@ -64,6 +64,7 @@ export default {
   methods: {
     logIn() {
       // console.log(this.$store.dispatch('addMessage', 'ololo'))
+      this.$store.dispatch('setPhonenumber', this.phonenumber)
       this.$router.push('chat')
     }
   }

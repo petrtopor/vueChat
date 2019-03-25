@@ -1,6 +1,6 @@
 <template lang="pug">
   .container
-    span {{text}}
+    span(overflow-y: scroll;) {{text}}
 </template>
 
 <script>

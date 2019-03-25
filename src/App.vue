@@ -18,10 +18,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  background-color: #e7ebf0;
 }
 #nav {
   padding: 30px;
-  
+
   a {
     font-weight: bold;
     color: #2c3e50;
