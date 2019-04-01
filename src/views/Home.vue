@@ -8,28 +8,12 @@
             .label
               span Milligramm
         .sibmit_button_wrap
-          .submit_button(@click="onSubmitButtonClick" id="sign_in_button")
+          .submit_button(@click="logIn" id="sign_in_button")
             .icon
             .label
               span Next
       .login_form_wrap
-        .login_form
-          .form_lead_header
-            span Sign in
-          .form_lead_caption
-            span Please choose your country and enter your full phone number.
-          .phone_country_input_group
-            .selector_label
-              span Country
-            .selector(@click="onPhoneCountryInputClick")
-              span Russia
-          .phone_groups_wrap
-            .phone_code_input_group(@click="onPhoneCodeInputGroupClick")
-              span(:class="{ active: isActivePhoneCodeInput }") Code
-              input(ref="PhoneCodeInput" @focus="onPhoneCodeInputFocus" @blur="onPhoneCodeInputBlur" v-model="phoneCode")
-            .phone_num_input_group(@click="onPhoneNumInputGroupClick")
-              span(:class="{ active: isActivePhoneNumInput }") Phone number
-              input(ref="PhoneNumInput" @focus="onPhoneNumInputFocus" @blur="onPhoneNumInputBlur" v-model="phoneNumber")
+        router-view(@phoneCodeChange="onPhoneCodeChange" @phoneNumberChange="onPhoneNumberChange")
         #recaptca_placeholder
       .about
 </template>
@@ -133,7 +117,7 @@
       flex-direction: column;
       justify-content: space-around;
       align-items: center;
-
+      /*
       .login_form {
         height: 250px;
         width: 274px;
@@ -248,6 +232,7 @@
           }
         }
       }
+      */
     }
 
     .about {
@@ -266,7 +251,7 @@ export default {
   name: "home",
   data() {
     return {
-      phoneCode: '+7',
+      phoneCode: '',
       phoneNumber: '',
       password: '',
       isActivePhoneCodeInput: false,
@@ -274,21 +259,15 @@ export default {
       recaptchaVerifier: null
     }
   },
-  /*
-  mounted() {
-    // [START appVerifier]
-    this.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptca_placeholder', {
-      'size': 'invisible',
-      'callback': function(response) {
-        console.log('reCAPTCHA solved, allow signInWithPhoneNumber.')
-        // reCAPTCHA solved, allow signInWithPhoneNumber.
-        // onSignInSubmit();
-      }
-    })
-    // [END appVerifier]
-  },
-  */
   methods: {
+    onPhoneCodeChange(payload) {
+      // console.log('onPhoneCodeChange: ', payload)
+      this.phoneCode = payload
+    },
+    onPhoneNumberChange(payload) {
+      // console.log('onPhoneNumberChange: ', payload)
+      this.phoneNumber = payload
+    },
     onSubmitButtonClick() {
       console.log('onSubmitButtonClick')
       // [START appVerifier]
@@ -322,59 +301,22 @@ export default {
               .catch(error => {
                 console.log('Confirmation code is INCORRECT:\n', error)
               })
-            // document.querySelector('#sign-in-button').addEventListener('click', event => {
-            //   console.log('the RENEWED button has been clicked')
-            //   confirmationResult.confirm(document.querySelector('#input-area > input[type="text"]:nth-child(2)').value).then(result => {
-            //     document.querySelector('#input-area > input[type="text"]:nth-child(2)').value = 'КЛАСС!!!'
-            //   }).catch(error => {
-            //     document.querySelector('#input-area > input[type="text"]:nth-child(2)').value = 'OБLOM!!!'
-            //   })
-            // })
-            /*
-            window.confirmationResult = confirmationResult;
-            window.signingIn = false;
-            updateSignInButtonUI();
-            updateVerificationCodeFormUI();
-            updateVerifyCodeButtonUI();
-            updateSignInFormUI();
-            */
           }).catch(function (error) {
             // Error; SMS not sent
             console.error('Error during signInWithPhoneNumber', error);
             window.alert('Error during signInWithPhoneNumber:\n\n' + error.code + '\n\n' + error.message);
-            // window.signingIn = false;
-            // updateSignInFormUI();
-            // updateSignInButtonUI();
           })
       }
-
-      // onSignInSubmit()
-    },
-    onPhoneCountryInputClick() {
-      this.phoneCode = '+7'
-    },
-    onPhoneCodeInputBlur() {
-      this.isActivePhoneCodeInput = false
-    },
-    onPhoneNumInputBlur() {
-      this.isActivePhoneNumInput = false
-    },
-    onPhoneCodeInputFocus() {
-      this.isActivePhoneCodeInput = true
-    },
-    onPhoneNumInputFocus() {
-      this.isActivePhoneNumInput = true
-    },
-    onPhoneCodeInputGroupClick() {
-      this.$refs.PhoneCodeInput.focus()
-    },
-    onPhoneNumInputGroupClick() {
-      this.$refs.PhoneNumInput.focus()
     },
     logIn() {
-      // console.log(this.$store.dispatch('addMessage', 'ololo'))
-      this.$store.dispatch('setPhonenumber', this.phonenumber)
-      this.$router.push('chat')
+      // this.$store.dispatch('setPhonenumber', this.phonenumber)
+      // this.$router.push('chat')
+      this.$router.push({ path: 'confirmcode', query: { phonenumber: this.phoneCode + this.phoneNumber } })
+    }
+  },
+  computed: {
+    fullPhoneNumber() {
+      return this.phoneCode + this.phoneNumber
     }
   }
 };

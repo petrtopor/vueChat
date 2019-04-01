@@ -1,7 +1,9 @@
-import Vue from "vue";
-import Router from "vue-router";
-import Home from "./views/Home.vue";
-import ChatView from "./views/ChatView.vue";
+import Vue from 'vue'
+import Router from 'vue-router'
+import Home from './views/Home.vue'
+import ChatView from './views/ChatView.vue'
+import LoginForm from './components/LoginForm.vue'
+import ConfirmForm from './components/ConfirmForm.vue'
 
 Vue.use(Router);
 
@@ -12,7 +14,19 @@ export default new Router({
     {
       path: "/",
       name: "home",
-      component: Home
+      component: Home,
+
+      children: [
+        {
+          path: '/',
+          component: LoginForm
+        },
+        {
+          path: 'confirmcode',
+          component: ConfirmForm,
+          props: route => ({ phoneNumber: route.query.phonenumber })
+        }
+      ]
     },
     {
       path: "/chat",
